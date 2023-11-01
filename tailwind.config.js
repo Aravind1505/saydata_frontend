@@ -7,11 +7,16 @@ module.exports = {
   ],
   theme: {
     extend: {
-      backgroundImage: {
-        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
-        'gradient-conic':
-          'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
+      colors: {
+        "dark-blue-theme" : "#0048AD",
+        "select-button-color" : "#E0EDFF"
       },
+      fontFamily: {
+        gotham: ['Gotham Pro', 'sans-serif']
+      },
+      fontSize : {
+        heading:['24px','24x']
+      }
     },
   },
   plugins: [],
