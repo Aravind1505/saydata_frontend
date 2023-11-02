@@ -9,7 +9,9 @@ module.exports = {
     extend: {
       colors: {
         "dark-blue-theme" : "#0048AD",
-        "select-button-color" : "#E0EDFF"
+        "select-button-color" : "#E0EDFF",
+        "body-bg" : "#F9FAFB",
+        "body-border" : "#E4E7EC"
       },
       fontFamily: {
         gotham: ['Gotham Pro', 'sans-serif']
