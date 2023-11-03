@@ -4,12 +4,42 @@ import { BsBookmark } from "react-icons/bs";
 import { SlFolder } from "react-icons/sl";
 import { AiOutlineCloudUpload } from "react-icons/ai";
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Dropdown from 'react-dropdown';
 import 'react-dropdown/style.css';
 
 function convertToText() {
+    console.log("entered");
+    const uploadForm = document.querySelector('.uploadFileForm');
+    console.log(uploadForm);
+    uploadForm.addEventListener('submit', function (e) {
+        e.preventDefault();
+        let file = e.target.uploadFileButton.files[0];
 
+        let formData = new FormData()
+        formData.append('file', file);
+
+        console.log(file);
+
+        const OpenAI = require("openai");
+        const fs = require("fs");
+        const openai = new OpenAI({
+            apiKey:"",
+            dangerouslyAllowBrowser: true
+        }) 
+
+        console.log(openai);
+
+        const audioFun = async () => {
+            const transcription = await openai.audio.transcriptions.create({
+                model:"whisper-1",
+                file: fs.createReadStream(file)
+            })
+            console.log(transcription.text);
+        };
+        
+        console.log(audioFun);
+    });
 }
 
 function DropDownLanguage() {
@@ -20,11 +50,13 @@ function DropDownLanguage() {
     const defaultOption = options[0];
 
     return (
-        <Dropdown options={options} onChange={"sadas"} value={defaultOption} placeholder="Select an option" />
+        <Dropdown options={options} onChange={null} value={defaultOption} placeholder="Select an option" />
     );
 }
 
-const UploadModal = (props) => {
+
+
+const UploadModalHandle = (props) => {
     if (props.isVisible == false) return null;
 
     const handleClose = (e) => {
@@ -46,34 +78,38 @@ const UploadModal = (props) => {
                     <DropDownLanguage />
                 </div>
 
-                <button className="flex flex-col gap-y-4 p-10 justify-center items-center rounded-md border-body-border border-2">
-                    <div className="bg-select-button-color rounded-full p-5">
-                        <AiOutlineCloudUpload className=" text-dark-blue-theme" size="30" />
-                    </div>
-                    <div><x className="text-dark-blue-theme font-bold">Click to upload</x> or drag and drop</div>
-                    <div>
-                        <div className="text-sm items-center flex flex-col justify-center">
-                            The maximum file size is 1GB for audio and 10GB for videos.
+                <form className="uploadFileForm flex flex-col gap-y-7" >
+                    <label htmlFor="uploadFileButton" className="flex flex-col gap-y-4 p-10 justify-center items-center rounded-md border-body-border border-2" onClick={() => convertToText()}>
+                        <div className="bg-select-button-color rounded-full p-5">
+                            <AiOutlineCloudUpload className=" text-dark-blue-theme" size="30" />
                         </div>
-                        <div className="text-sm">
-                            Supported formats: mp3, mp4, wav, caf, aiff, avi, rmvb, flv, m4a, mov, wmv, wma
+                        <div><span className="text-dark-blue-theme font-bold">Click to upload</span> or drag and drop</div>
+                        <div>
+                            <div className="text-sm items-center flex flex-col justify-center">
+                                The maximum file size is 1GB for audio and 10GB for videos.
+                            </div>
+                            <div className="text-sm">
+                                Supported formats: mp3, mp4, wav, caf, aiff, avi, rmvb, flv, m4a, mov, wmv, wma
+                            </div>
                         </div>
+                    </label>
+
+                    <input type="file" id="uploadFileButton" accept=".mp3,.mp4,.wav,.caf,.aiff,.avi,.rmvb,.flv,.m4a,.mov,.wmv,.wma" required hidden />
+
+                    <div className="flex flex-col gap-y-3">
+                        <div>Import from Link</div>
+                        <input className="rounded-md border-body-border border-2 p-3" placeholder="Place a Dropbox, Google Drive or a Youtube URL here." type="text"></input>
                     </div>
-                </button>
 
-                <div className="flex flex-col gap-y-3">
-                    <div>Import from Link</div>
-                    <input className="rounded-md border-body-border border-2 p-3" placeholder="Place a Dropbox, Google Drive or a Youtube URL here." type="text"></input>
-                </div>
+                    <div className="flex flex-row gap-x-3 items-center">
+                        <input type="checkbox" className="rounded-full w-4 h-4" />
+                        <div>Speaker identification</div>
+                    </div>
 
-                <div className="flex flex-row gap-x-3 items-center">
-                    <input type="checkbox" className="rounded-full w-4 h-4" />
-                    <div>Speaker identification</div>
-                </div>
-
-                <button className="bg-dark-blue-theme rounded-md flex p-4 text-white text-xl items-center justify-center" data-modal-target="default-modal" data-modal-toggle="default-modal" role="button" >
-                    Transcribe File
-                </button>
+                    <button type="submit" className="bg-dark-blue-theme rounded-md flex p-4 text-white text-xl items-center justify-center" data-modal-target="default-modal" data-modal-toggle="default-modal" role="button" >
+                        Transcribe File
+                    </button>
+                </form>
             </div>
         </div>
     );
@@ -91,7 +127,7 @@ function TopUser() {
         <button className="bg-dark-blue-theme rounded-md flex p-4 text-white text-xl" data-modal-target="default-modal" data-modal-toggle="default-modal" role="button" onClick={() => setShowModal(true)}>
             Transcribe File
         </button>
-        <UploadModal isVisible={showModal} onClose={() => setShowModal(false)} />
+        <UploadModalHandle isVisible={showModal} onClose={() => setShowModal(false)} />
     </div>
     );
 }
